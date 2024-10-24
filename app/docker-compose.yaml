@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env
+
+  api-fastapi:
+    build: ./api-fastapi
+    image: api-fastapi:1.0.0
+    container_name: api-fastapi
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - goals:/app/goals
+    depends_on:
+      - mongodb
+
+  client-react:
+    build: ./client-react
+    image: client-react:1.0.0
+    container_name: client-react
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-fastapi
+
+volumes:
+  goals: 

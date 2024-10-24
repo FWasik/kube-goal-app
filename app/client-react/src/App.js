@@ -1,113 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 
-import GoalInput from './components/goals/GoalInput';
-import CourseGoals from './components/goals/CourseGoals';
-import ErrorAlert from './components/UI/ErrorAlert';
+const fetchTasks = async () => {
+  const response = await fetch('/api/tasks');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
+const addTask = async (newTask) => {
+  const response = await fetch('/api/tasks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title: newTask }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to add task');
+  }
+  return response.json();
+};
 
 function App() {
-  const [loadedGoals, setLoadedGoals] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [title, setTitle] = useState('');
+  const queryClient = useQueryClient();
 
-  useEffect(function () {
-    async function fetchData() {
-      setIsLoading(true);
+  const { data: tasks = [], isLoading, isError } = useQuery(['tasks'], fetchTasks);
 
-      try {
-        const response = await fetch('/goals/');
+  const mutation = useMutation(addTask, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tasks']);
+    },
+  });
 
-        const resData = await response.json();
-
-        if (!response.ok) {
-          throw new Error(resData.message || 'Fetching the goals failed.');
-        }
-
-        setLoadedGoals(resData.goals);
-      } catch (err) {
-        setError(
-          err.message ||
-            'Fetching goals failed - the server responsed with an error.'
-        );
-      }
-      setIsLoading(false);
+  const handleAddTask = () => {
+    if (title.trim()) {
+      mutation.mutate(title);
+      setTitle('');
     }
+  };
 
-    fetchData();
-  }, []);
-
-  async function addGoalHandler(goalText) {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/goals/', {
-        method: 'POST',
-        body: JSON.stringify({
-          text: goalText,
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const resData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(resData.message || 'Adding the goal failed.');
-      }
-
-      setLoadedGoals((prevGoals) => {
-        const updatedGoals = [
-          {
-            id: resData.goal.id,
-            text: goalText,
-          },
-          ...prevGoals,
-        ];
-        return updatedGoals;
-      });
-    } catch (err) {
-      setError(
-        err.message ||
-          'Adding a goal failed - the server responsed with an error.'
-      );
-    }
-    setIsLoading(false);
-  }
-
-  async function deleteGoalHandler(goalId) {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/goals/' + goalId, {
-        method: 'DELETE',
-      });
-
-      const resData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(resData.message || 'Deleting the goal failed.');
-      }
-
-      setLoadedGoals((prevGoals) => {
-        const updatedGoals = prevGoals.filter((goal) => goal.id !== goalId);
-        return updatedGoals;
-      });
-    } catch (err) {
-      setError(
-        err.message ||
-          'Deleting the goal failed - the server responsed with an error.'
-      );
-    }
-    setIsLoading(false);
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching tasks</div>;
 
   return (
-    <div>
-      {error && <ErrorAlert errorText={error} />}
-      <GoalInput onAddGoal={addGoalHandler} />
-      {!isLoading && (
-        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
-      )}
+    <div className="app">
+      <h1>Goal App</h1>
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Add a task"
+      />
+      <button onClick={handleAddTask}>Add Task</button>
+      <ul>
+        {tasks.map((task) => (
+          <li key={task.id}>{task.title}</li>
+        ))}
+      </ul>
     </div>
   );
 }
