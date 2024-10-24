@@ -1,21 +1,20 @@
-FROM node:20.14-bullseye-slim AS build
+FROM node:20.14 AS build
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
+RUN npm install
 
-RUN --mount=type=cache,target=/usr/src/app/.npm \
-  npm set cache /usr/src/app/.npm && \
-  npm install
-
-COPY . .
+COPY . ./
 
 RUN npm run build
 
-FROM nginxinc/nginx-unprivileged:1.23-alpine-perl
+FROM nginx:alpine
 
-COPY --link nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --link --from=build usr/src/app/dist/ /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 
-EXPOSE 8080
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
