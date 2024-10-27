@@ -1,0 +1,24 @@
+version: "3"
+
+
+includes:
+  common:
+    taskfile: ./common/Taskfile.yaml
+    dir: ./common
+  mongodb:
+    taskfile: ./mongo/Taskfile.yaml
+    dir: ./mongo
+  cluster-config:
+    taskfile: ./cluster-config/Taskfile.yaml
+    dir: ./cluster-config
+
+tasks:
+  api-fastapi:apply:
+    desc: "Apply kubernetes resource manifests for api-fastapi application"
+    cmds:
+      - kubectl apply -f ./api-fastapi
+      
+  client-react:apply:
+    desc: "Apply kubernetes resource manifests for client-react application"
+    cmds:
+      - kubectl apply -f ./client-react

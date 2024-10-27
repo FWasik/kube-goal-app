@@ -9,18 +9,17 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost", "http://kubernetes.docker.internal"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-MONGO_DB_USERNAME = os.getenv("MONGO_INITDB_ROOT_USERNAME")
-MONGO_DB_PASSWORD = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
-MONGO_DB_NAME = os.getenv("MONGO_INITDB_DATABASE")
+DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_NAME = os.getenv("MONGO_INITDB_DATABASE")
 
-client = AsyncIOMotorClient(f"mongodb://{MONGO_DB_USERNAME}:{MONGO_DB_PASSWORD}@mongodb:27017/{MONGO_DB_NAME}?authSource=admin")
-db = client.goalapp
+client = AsyncIOMotorClient(DATABASE_URL)
+db = client[DATABASE_NAME]
 collection = db.goals
 
 class Goal(BaseModel):
