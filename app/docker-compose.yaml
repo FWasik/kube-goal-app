@@ -11,7 +11,7 @@ services:
 
   api-fastapi:
     build: ./api-fastapi
-    image: api-fastapi:1.0.0
+    image: dilreni2137/goal-app-api-fastapi:1.0.0
     container_name: api-fastapi
     ports:
       - "8000:8000"
@@ -24,10 +24,10 @@ services:
 
   client-react:
     build: ./client-react
-    image: client-react:1.0.0
+    image: dilreni2137/goal-app-client-react:1.0.0
     container_name: client-react
     ports:
-      - "3000:80"
+      - "3000:8080"
     depends_on:
       - api-fastapi
 
