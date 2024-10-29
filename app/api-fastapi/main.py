@@ -41,3 +41,8 @@ async def delete_goal(goal_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Goal not found")
     return {"status": "Goal deleted successfully"}
+
+
+@app.get("/api/health")
+async def health_check():
+    return {"status": "healthy"}
