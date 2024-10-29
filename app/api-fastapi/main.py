@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost", "http://kubernetes.docker.internal"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,3 +41,8 @@ async def delete_goal(goal_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Goal not found")
     return {"status": "Goal deleted successfully"}
+
+
+@app.get("/api/health")
+async def health_check():
+    return {"status": "healthy"}
