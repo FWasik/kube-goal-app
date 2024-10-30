@@ -13,3 +13,8 @@ Provide a brief description of the changes and their purpose.
 
 - [ ] Kubernetes-related changes
 - [ ] Relevant details for Kubernetes-related modifications
+  
+### GitHub (Optional)
+
+- [ ] GitHub-related changes
+- [ ] Relevant details for GitHub-related modifications  
