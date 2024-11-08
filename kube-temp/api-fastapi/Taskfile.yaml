@@ -1,0 +1,10 @@
+version: "3"
+
+tasks:
+  apply-dev:
+    desc: "Apply development Kubernetes resources with Helm"
+    cmd: helm upgrade --install api-fastapi . -f values-dev.yaml
+
+  delete-dev:
+    desc: "Delete development Kubernetes resources with Helm"
+    cmd: helm uninstall api-fastapi 
