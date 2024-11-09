@@ -4,3 +4,7 @@ includes:
   api-fastapi:
     taskfile: ./api-fastapi/Taskfile.yaml
     dir: ./api-fastapi
+
+  client-react:
+    taskfile: ./client-react/Taskfile.yaml
+    dir: ./client-react
