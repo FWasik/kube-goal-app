@@ -4,6 +4,8 @@ service:
 
 
 
+namespace: kube-goal-app
+
 replicaCount: 1
 
 image:
