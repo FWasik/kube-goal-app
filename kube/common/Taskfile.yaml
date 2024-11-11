@@ -11,18 +11,3 @@ tasks:
     desc: "Delete the namespace to clean up"
     cmds:
       - kubectl delete -f Namespace.yaml
-
-  install-ingress-nginx:
-    desc: "Install ingress-nginx"
-    cmds:
-      - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-      - |
-        helm upgrade --install \
-        ingress-nginx ingress-nginx/ingress-nginx \
-        --namespace ingress-nginx \
-        --create-namespace
-
-  ingress:apply:
-    desc: "Apply ingress for application"
-    cmds:
-      - kubectl apply -f Ingress.yaml
