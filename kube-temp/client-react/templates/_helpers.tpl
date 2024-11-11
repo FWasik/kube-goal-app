@@ -1,10 +1,3 @@
-{{/*
-Expand the name of the chart.
-*/}}
-{{- define "client-react.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
 
 {{/*
 Create chart name and version as used by the chart label.
@@ -23,6 +16,7 @@ helm.sh/chart: {{ include "client-react.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/name: {{ .Release.Name }}
 {{- end }}
 
 {{/*
