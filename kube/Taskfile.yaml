@@ -36,7 +36,7 @@ tasks:
           --set auth.database=<your_database> \
           --create-namespace
 
-  setup-environment:
+  setup-environment-and-run:
     desc: "Set up the entire environment"
     cmds:
       - task cluster-config:kind-create-cluster
@@ -45,5 +45,6 @@ tasks:
       - task api-fastapi:apply-dev
       - task client-react:apply-dev
       - task my-ingress:install-ingress-nginx
-      - sleep 120
+      - sleep 120                                 # ingress-nginx needs time to available
       - task my-ingress:apply-dev
+      - task my-ingress:port-forward-ingress-nginx
