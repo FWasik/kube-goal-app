@@ -1,0 +1,10 @@
+version: "3"
+
+tasks:
+  apply-dev:
+    desc: "Apply client-react development Kubernetes resources with Helm"
+    cmd: helm upgrade --install client-react . -f values-dev.yaml
+
+  delete-dev:
+    desc: "Delete client-react development Kubernetes resources with Helm"
+    cmd: helm uninstall client-react 

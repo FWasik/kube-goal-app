@@ -1,0 +1,24 @@
+version: "3"
+
+tasks:
+  install-ingress-nginx:
+    desc: "Install ingress-nginx"
+    cmds:
+      - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      - |
+        helm upgrade --install \
+        ingress-nginx ingress-nginx/ingress-nginx \
+        --namespace ingress-nginx \
+        --create-namespace
+
+  apply-dev:
+    desc: "Apply ingress development Kubernetes resource with Helm"
+    cmd: helm upgrade --install my-ingress . -f values-dev.yaml
+
+  delete-dev:
+    desc: "Delete ingress development Kubernetes resource with Helm"
+    cmd: helm uninstall my-ingress
+
+  port-forward-ingress-nginx:
+    desc: "Port forward ingress-nginx controller's service to be accesible with browser" 
+    cmd: kubectl port-forward service/ingress-nginx-controller -n ingress-nginx 8080:80

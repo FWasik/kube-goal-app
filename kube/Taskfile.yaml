@@ -1,24 +1,50 @@
 version: "3"
 
-
 includes:
   common:
     taskfile: ./common/Taskfile.yaml
     dir: ./common
-  mongodb:
-    taskfile: ./mongo/Taskfile.yaml
-    dir: ./mongo
+
+  api-fastapi:
+    taskfile: ./api-fastapi/Taskfile.yaml
+    dir: ./api-fastapi
+
+  client-react:
+    taskfile: ./client-react/Taskfile.yaml
+    dir: ./client-react
+
   cluster-config:
     taskfile: ./cluster-config/Taskfile.yaml
-    dir: ./cluster-config
+    dir: ./cluster-config  
+
+  my-ingress:
+    taskfile: ./my-ingress/Taskfile.yaml
+    dir: ./my-ingress  
 
 tasks:
-  api-fastapi:apply:
-    desc: "Apply kubernetes resource manifests for api-fastapi application"
+  mongodb:install-mongodb:
+    desc: "Deploy Mongo DB using Helm"
     cmds:
-      - kubectl apply -f ./api-fastapi
-      
-  client-react:apply:
-    desc: "Apply kubernetes resource manifests for client-react application"
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - |
+        helm upgrade --install \
+          -n mongodb \
+          mongodb bitnami/mongodb \
+          --set auth.username=<your_username> \
+          --set auth.password=<your_password> \
+          --set auth.rootPassword=<your_password> \
+          --set auth.database=<your_database> \
+          --create-namespace
+
+  setup-environment-and-run:
+    desc: "Set up the entire environment"
     cmds:
-      - kubectl apply -f ./client-react
+      - task cluster-config:kind-create-cluster
+      - task common:create-namespace
+      - task mongodb:install-mongodb
+      - task api-fastapi:apply-dev
+      - task client-react:apply-dev
+      - task my-ingress:install-ingress-nginx
+      - sleep 120                                 # ingress-nginx needs time to available
+      - task my-ingress:apply-dev
+      - task my-ingress:port-forward-ingress-nginx

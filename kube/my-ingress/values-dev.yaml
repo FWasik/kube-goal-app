@@ -1,0 +1,13 @@
+namespace: kube-goal-app
+
+class: nginx
+
+host: kubernetes.docker.internal
+
+backend: api-fastapi
+
+backendPort: 8000
+
+frontend: client-react
+
+frontendPort: 3000

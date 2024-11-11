@@ -1,0 +1,6 @@
+apiVersion: v2
+name: api-fastapi
+description: A Helm chart for api-fastapi's Kubernetes resources
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
