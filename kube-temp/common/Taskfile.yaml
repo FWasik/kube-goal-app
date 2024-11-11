@@ -1,0 +1,13 @@
+version: "3"
+
+tasks:
+  create-namespace:
+    desc: "Create a namespace and set as default"
+    cmds:
+      - kubectl apply -f Namespace.yaml
+      - kubens kube-goal-app
+
+  delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f Namespace.yaml

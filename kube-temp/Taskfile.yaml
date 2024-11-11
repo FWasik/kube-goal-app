@@ -1,6 +1,10 @@
 version: "3"
 
 includes:
+  common:
+    taskfile: ./common/Taskfile.yaml
+    dir: ./common
+
   api-fastapi:
     taskfile: ./api-fastapi/Taskfile.yaml
     dir: ./api-fastapi
@@ -8,3 +12,38 @@ includes:
   client-react:
     taskfile: ./client-react/Taskfile.yaml
     dir: ./client-react
+
+  cluster-config:
+    taskfile: ./cluster-config/Taskfile.yaml
+    dir: ./cluster-config  
+
+  my-ingress:
+    taskfile: ./my-ingress/Taskfile.yaml
+    dir: ./my-ingress  
+
+tasks:
+  mongodb:install-mongodb:
+    desc: "Deploy Mongo DB using Helm"
+    cmds:
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - |
+        helm upgrade --install \
+          -n mongodb \
+          mongodb bitnami/mongodb \
+          --set auth.username=<your_username> \
+          --set auth.password=<your_password> \
+          --set auth.rootPassword=<your_password> \
+          --set auth.database=<your_database> \
+          --create-namespace
+
+  setup-environment:
+    desc: "Set up the entire environment"
+    cmds:
+      - task cluster-config:kind-create-cluster
+      - task common:create-namespace
+      - task mongodb:install-mongodb
+      - task api-fastapi:apply-dev
+      - task client-react:apply-dev
+      - task my-ingress:install-ingress-nginx
+      - sleep 120
+      - task my-ingress:apply-dev
